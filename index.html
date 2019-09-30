@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Морской бой</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link href="https://fonts.googleapis.com/css?family=Amatic+SC&display=swap&subset=cyrillic" rel="stylesheet">
+</head>
+<body>
+	<h1 class="headerText">Морской бой</h1>
+	<div class="welcomePlayer">
+		<div class="inputInfo">
+			<div class="field">
+				<label for="nicknamePlayer">Ваш никнейм: </label>
+				<input id="nicknamePlayer" type="text" placeholder="Никнейм" required>
+			</div>
+			<div class="field">
+				<label for="nicknameComp">Никнейм оппонента: </label>
+				<input id="nicknameComp" type="text" placeholder="Никнейм" required>
+			</div>
+			<button onclick="startGame()">Играть!</button>
+		</div>
+	</div>
+	<div class="battlefield">
+		<h1 class="headerText">Fight!</h1>
+		<div class="fields">
+			<div class="fieldPlayer"></div>
+			<div class="fieldComp"></div>
+		</div>
+		<h3 class="res"></h3>
+		<button id="revenge" onclick="revenge()">Реванш?</button>
+	</div>
+
+	<script type="text/javascript" src="script.js"></script>
+</body>
+</html>
