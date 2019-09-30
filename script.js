@@ -1,57 +1,16 @@
 let playerMatrix, compMatrix, playerName, compName;
 
-
 /*
 	Проверка введения данных в поля никнейм
-	Функция инициализации старта игры
-	Добавление таблице соперника события "атаки" при нажатии
-	Проверка выигрыша после попадания(иначе продолжение хода) и смена хода после промаха
+	Начало игры при не пустых значениях
 */
 
-function startGame() {
+function validateNames() {
 	playerName = document.getElementById("nicknamePlayer").value;
 	compName = document.getElementById("nicknameComp").value;
 
 	if (playerName != "" && compName != "") {
-		hideWelocme();
-		playerMatrix = randomLocationShips();
-		compMatrix = randomLocationShips();
-
-		drawField(playerMatrix);
-		drawCompField(compMatrix);
-
-		document.getElementsByClassName("res")[0].innerHTML = `&#8592; ${playerName} стреляет первым`;	
-
-		let compTable = document.getElementsByTagName("table")[1];
-
-		for (let i = 0; i < compTable.rows.length; i++) {
-			for (let j = 0; j <compTable.rows[i].cells.length; j++) {
-				compTable.rows[i].cells[j].onclick = function() {
-					let row = this.parentElement.rowIndex;
-					let cell = this.cellIndex;
-
-					if (compMatrix[row][cell] == 1) {
-						compTable.rows[i].cells[j].textContent = "\u274C";
-						compMatrix[row][cell] = 2;
-						let check = checkWinning(compMatrix);
-						if (check) {
-							document.getElementsByClassName("res")[0].innerHTML = `${playerName} победил!`;
-							document.getElementsByClassName("res")[0].style.fontSize = "70px";
-							document.getElementById("playerDiv").remove();
-							document.getElementById("compDiv").remove();
-							document.getElementById("revenge").style.display = 'inline-block';
-						} else {
-							document.getElementsByClassName("res")[0].innerHTML = `	&#8592; ${playerName} попал. Снова стреляет ${playerName}`;
-						}
-					} else if (compMatrix[row][cell] == 0) {
-						compTable.rows[i].cells[j].textContent = "\u26ab";
-						compMatrix[row][cell] = 3;
-						document.getElementsByClassName("res")[0].innerHTML = `${playerName} промахнулся. Стреляет ${compName} &#8594;`;
-						counterAttack();
-					}
-				}
-			}
-		}
+		startGame();
 	} else if (playerName == "" && compName != "") {
 		document.getElementsByTagName("label")[0].style.color = 'red';
 		document.getElementsByTagName("label")[1].style.color = 'blue';
@@ -61,6 +20,54 @@ function startGame() {
 	} else {
 		document.getElementsByTagName("label")[0].style.color = 'red';
 		document.getElementsByTagName("label")[1].style.color = 'red';
+	}
+}
+
+/*
+	Функция инициализации старта игры
+	Добавление таблице соперника события "атаки" при нажатии
+	Проверка выигрыша после попадания(иначе продолжение хода) и смена хода после промаха
+	0 в массиве пустое поле
+	1 лодка
+	2 попадание по лодке
+	3 попадание по пустому полю
+*/
+
+function startGame() {
+	hideWelocme();
+	playerMatrix = randomShipLocation();
+	compMatrix = randomShipLocation();
+
+	drawPlayerField(playerMatrix);
+	drawCompField(compMatrix);
+
+	document.getElementsByClassName("res")[0].innerHTML = `&#8592; ${playerName} стреляет первым`;	
+
+	let compTable = document.getElementsByTagName("table")[1];
+
+	for (let i = 0; i < compTable.rows.length; i++) {
+		for (let j = 0; j <compTable.rows[i].cells.length; j++) {
+			compTable.rows[i].cells[j].onclick = function() {
+				let row = this.parentElement.rowIndex;
+				let cell = this.cellIndex;
+
+				if (compMatrix[row][cell] == 1) {
+					compTable.rows[i].cells[j].textContent = "\u274C";
+					compMatrix[row][cell] = 2;
+					let check = checkWinning(compMatrix);
+					if (check) {
+						displayWinner(true);
+					} else {
+						document.getElementsByClassName("res")[0].innerHTML = `	&#8592; ${playerName} попал. Снова стреляет ${playerName}`;
+					}
+				} else if (compMatrix[row][cell] == 0) {
+					compTable.rows[i].cells[j].textContent = "\u26ab";
+					compMatrix[row][cell] = 3;
+					document.getElementsByClassName("res")[0].innerHTML = `${playerName} промахнулся. Стреляет ${compName} &#8594;`;
+					counterAttack();
+				}
+			}
+		}
 	}
 }
 
@@ -81,9 +88,9 @@ function hideWelocme() {
 */
 
 function createMatrix() {
-	let x = 10, y = 10, arr = [10];
+	let arr = [10];
 
-	for (let i = 0; i < x; i++) {
+	for (let i = 0; i < 10; i++) {
 		arr[i] = new Array(10).fill(0);
 	}
 
@@ -107,7 +114,7 @@ function getRandom(n) {
 	4 однопалубных
 */
 
-function randomLocationShips() {
+function randomShipLocation() {
 	let availableShips = [
 		[1, 4],
 		[2, 3],
@@ -121,7 +128,7 @@ function randomLocationShips() {
 		let decksCount = availableShips[i][1];
 
 		for (let j = 0; j < availableShips[i][0]; j++) {
-			getShipCoordinates(decksCount);
+			getShipRandomCoordinates(decksCount);
 		}
 	}
 
@@ -129,10 +136,11 @@ function randomLocationShips() {
 }
 
 /*
-	Генерация случайного положения для лодки с определенным количеством палуб
+	Генерация случайного положения(горизонтально или вертикально) для лодки
+	и последующая проверка возможности добавить её
 */
 
-function getShipCoordinates(decks) {
+function getShipRandomCoordinates(decks) {
 	let shipX = getRandom(1);
 	let shipY = (shipX == 0) ? 1 : 0;
 	let x, y;
@@ -148,7 +156,7 @@ function getShipCoordinates(decks) {
 	let res = validateCoordinates(x, y, shipX, shipY, decks);
 
 	if (!res) {
-		getShipCoordinates(decks);
+		getShipRandomCoordinates(decks);
 	} else {
 		addShip(x, y, shipX, shipY, decks);
 	}
@@ -182,7 +190,7 @@ function validateCoordinates(x, y, shipX, shipY, decks) {
 }
 
 /*
-	Добавление лодки в массив поля
+	Добавление лодки в массив массивов для хранения поля
 */
 
 function addShip(x, y, shipX, shipY, decks) {
@@ -199,10 +207,10 @@ function addShip(x, y, shipX, shipY, decks) {
 
 /*
 	Функция отрисовки поля игрока
-	На вход передается массив содержащая расположение кораблей
+	На вход передается массив массовов содержащий расположение кораблей игрока
 */
 
-function drawField(matrix) {
+function drawPlayerField(matrix) {
 	let div = document.createElement("div");
 	div.setAttribute("id", "playerDiv");
 	let h = document.createElement("H1");           
@@ -231,7 +239,7 @@ function drawField(matrix) {
 
 /*
 	Функция отрисовки поля компьютера
-	На вход передается матрица содержащая расположение кораблей
+	На вход передается матрица содержащая расположение кораблей компьютера
 */
 
 function drawCompField(matrix) {
@@ -275,9 +283,33 @@ function checkWinning(matrix) {
 }
 
 /*
-	Функция ответной атаки компьютера
+	Отображение имени побежителя
+*/
+
+function displayWinner(isPlayerWon) {
+	if (isPlayerWon) {
+		document.getElementsByClassName("res")[0].innerHTML = `${playerName} победил!`;
+		document.getElementsByClassName("res")[0].style.fontSize = "70px";
+		document.getElementById("playerDiv").remove();
+		document.getElementById("compDiv").remove();
+		document.getElementById("revenge").style.display = 'inline-block';
+	} else {
+		document.getElementsByClassName("res")[0].innerHTML = `${compName} победил!`;
+		document.getElementsByClassName("res")[0].style.fontSize = "70px";
+		document.getElementById("playerDiv").remove();
+		document.getElementById("compDiv").remove();
+		document.getElementById("revenge").style.display = 'inline-block';
+	}
+}
+
+/*
+	Функция атаки компьютера
 	Компьютер атакует случайную ячейку
 	Проверка выигрыша после попадания(иначе продолжение хода) и смена хода после промаха
+	0 в массиве пустое поле
+	1 лодка
+	2 попадание по лодке
+	3 попадание по пустому полю
 */
 
 function counterAttack() {
@@ -291,11 +323,7 @@ function counterAttack() {
 		playerMatrix[row][cell] = 2;
 		let check = checkWinning(playerMatrix);
 		if (check) {
-			document.getElementsByClassName("res")[0].innerHTML = `${compName} победил!`;
-			document.getElementsByClassName("res")[0].style.fontSize = "70px";
-			document.getElementById("playerDiv").remove();
-			document.getElementById("compDiv").remove();
-			document.getElementById("revenge").style.display = 'inline-block';
+			displayWinner(false);
 		} else {
 			document.getElementsByClassName("res")[0].innerHTML = `${compName} попал. Снова стреляет ${compName} &#8594;`;
 		}
