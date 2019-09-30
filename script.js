@@ -1,5 +1,10 @@
 let playerMatrix, compMatrix, playerName, compName;
 
+
+/*
+	Начало
+*/
+
 function startGame() {
 	playerName = document.getElementById("nicknamePlayer").value;
 	compName = document.getElementById("nicknameComp").value;
@@ -28,7 +33,10 @@ function startGame() {
 						console.log(compMatrix);
 						let check = checkWinning(compMatrix);
 						if (check) {
-							document.getElementsByClassName("res")[0].innerHTML = `&#8592; ${playerName} победил!`;
+							document.getElementsByClassName("res")[0].innerHTML = `${playerName} победил!`;
+							document.getElementsByClassName("res")[0].style.fontSize = "70px";
+							document.getElementById("playerDiv").remove();
+							document.getElementById("compDiv").remove();
 							document.getElementById("revenge").style.display = 'inline-block';
 						} else {
 							document.getElementsByClassName("res")[0].innerHTML = `	&#8592; ${playerName} попал. Снова стреляет ${playerName}`;
@@ -54,6 +62,10 @@ function startGame() {
 	}
 }
 
+/*
+	Смена экрана
+*/
+
 function hideWelocme() {
 	let welcome = document.getElementsByClassName("welcomePlayer")[0];
 	let battleField = document.getElementsByClassName("battlefield")[0];
@@ -61,6 +73,10 @@ function hideWelocme() {
 	welcome.style.display = "none";
 	battleField.style.display = "block";
 }
+
+/*
+	Пустой массив массивов 10x10
+*/
 
 function createMatrix() {
 	let x = 10, y = 10, arr = [10];
@@ -72,16 +88,29 @@ function createMatrix() {
 	return arr;
 }
 
+/*
+	Случайное число от 0 до n
+*/
+
 function getRandom(n) {
 	return Math.floor(Math.random() * (n + 1));
 }
 
+
+/*
+	Функция для поочередного расположения лодок в массиве
+	4 однопалубных
+	3 двухпаоубных
+	2 трехпалубных
+	1 четырехпалубная
+*/
+
 function randomLocationShips() {
 	let availableShips = [
-		[1, 4, "Четырехпалубный"],
-		[2, 3, "Трехпалубный"],
-		[3, 2, "Двухпалубный"],
-		[4, 1, "Однопалубный"],
+		[1, 4],
+		[2, 3],
+		[3, 2],
+		[4, 1],
 	];
 
 	matrix = createMatrix();
@@ -96,6 +125,10 @@ function randomLocationShips() {
 
 	return matrix;
 }
+
+/*
+	Генерация случайного положения для лодки с определенным количеством палуб
+*/
 
 function getShipCoordinates(decks) {
 	let shipX = getRandom(1);
@@ -118,6 +151,10 @@ function getShipCoordinates(decks) {
 		addShip(x, y, shipX, shipY, decks);
 	}
 }
+
+/*
+	Функция для проверки возможности добавления лодки в соответствии с правилами игры
+*/
 
 function validateCoordinates(x, y, shipX, shipY, decks) {
 	let fromX, toX, fromY, toY;
@@ -142,6 +179,10 @@ function validateCoordinates(x, y, shipX, shipY, decks) {
 	return true;
 }
 
+/*
+	Добавление лодки в массив поля
+*/
+
 function addShip(x, y, shipX, shipY, decks) {
 	if (shipX) {
 		for (let i = x; i < x + decks; i++) {
@@ -153,6 +194,11 @@ function addShip(x, y, shipX, shipY, decks) {
 		}
 	}
 }
+
+/*
+	Функция отрисовки поля игрока
+	На вход передается массив содержащая расположение кораблей
+*/
 
 function drawField(matrix) {
 	let div = document.createElement("div");
@@ -181,6 +227,11 @@ function drawField(matrix) {
 	document.getElementsByClassName("fieldPlayer")[0].appendChild(div);
 }
 
+/*
+	Функция отрисовки поля компьютера
+	На вход передается матрица содержащая расположение кораблей
+*/
+
 function drawCompField(matrix) {
 	let div = document.createElement("div");
 	div.setAttribute("id", "compDiv");
@@ -207,6 +258,10 @@ function drawCompField(matrix) {
 	document.getElementsByClassName("fieldComp")[0].appendChild(div);
 }
 
+/*
+	Функция проверки победы
+*/
+
 function checkWinning(matrix) {
 	for (var i = 0; i < matrix.length; i++) {
 		for (var j = 0; j < matrix[i].length; j++) {
@@ -216,6 +271,12 @@ function checkWinning(matrix) {
 
 	return true;
 }
+
+/*
+	Функция ответной атаки компьютера
+	Компьютер атакует случайную ячейку
+	После попадания проверка выигрыша и смена хода после промаха
+*/
 
 function counterAttack() {
 	let row = getRandom(9);
@@ -228,7 +289,10 @@ function counterAttack() {
 		playerMatrix[row][cell] = 2;
 		let check = checkWinning(playerMatrix);
 		if (check) {
-			document.getElementsByClassName("res")[0].innerHTML = `${compName} победил! &#8594;`;
+			document.getElementsByClassName("res")[0].innerHTML = `${compName} победил!`;
+			document.getElementsByClassName("res")[0].style.fontSize = "70px";
+			document.getElementById("playerDiv").remove();
+			document.getElementById("compDiv").remove();
 			document.getElementById("revenge").style.display = 'inline-block';
 		} else {
 			document.getElementsByClassName("res")[0].innerHTML = `${compName} попал. Снова стреляет ${compName} &#8594;`;
@@ -244,10 +308,13 @@ function counterAttack() {
 	}
 }
 
+/*
+	Функция для запуска новой игры для того же пользователя
+*/
+
 function revenge() {
-	document.getElementById("playerDiv").remove();
-	document.getElementById("compDiv").remove();
 	document.getElementById("revenge").style.display = 'none';
+	document.getElementsByClassName("res")[0].style.fontSize = "40px";
 
 	startGame();
 }
