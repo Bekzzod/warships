@@ -2,7 +2,10 @@ let playerMatrix, compMatrix, playerName, compName;
 
 
 /*
-	Начало
+	Проверка введения данных в поля никнейм
+	Функция инициализации старта игры
+	Добавление таблице соперника события "атаки" при нажатии
+	Проверка выигрыша после попадания(иначе продолжение хода) и смена хода после промаха
 */
 
 function startGame() {
@@ -30,7 +33,6 @@ function startGame() {
 					if (compMatrix[row][cell] == 1) {
 						compTable.rows[i].cells[j].textContent = "\u274C";
 						compMatrix[row][cell] = 2;
-						console.log(compMatrix);
 						let check = checkWinning(compMatrix);
 						if (check) {
 							document.getElementsByClassName("res")[0].innerHTML = `${playerName} победил!`;
@@ -63,7 +65,7 @@ function startGame() {
 }
 
 /*
-	Смена экрана
+	Смена экрана приветствия на экран игры
 */
 
 function hideWelocme() {
@@ -75,7 +77,7 @@ function hideWelocme() {
 }
 
 /*
-	Пустой массив массивов 10x10
+	Создание пустого массива массивов 10x10
 */
 
 function createMatrix() {
@@ -99,10 +101,10 @@ function getRandom(n) {
 
 /*
 	Функция для поочередного расположения лодок в массиве
-	4 однопалубных
-	3 двухпаоубных
-	2 трехпалубных
 	1 четырехпалубная
+	2 трехпалубных
+	3 двухпаоубных
+	4 однопалубных
 */
 
 function randomLocationShips() {
@@ -275,7 +277,7 @@ function checkWinning(matrix) {
 /*
 	Функция ответной атаки компьютера
 	Компьютер атакует случайную ячейку
-	После попадания проверка выигрыша и смена хода после промаха
+	Проверка выигрыша после попадания(иначе продолжение хода) и смена хода после промаха
 */
 
 function counterAttack() {
