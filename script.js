@@ -64,7 +64,7 @@ function startGame() {
 					compTable.rows[i].cells[j].textContent = "\u26ab";
 					compMatrix[row][cell] = 3;
 					document.getElementsByClassName("res")[0].innerHTML = `${playerName} промахнулся. Стреляет ${compName} &#8594;`;
-					sleep(3000);
+					sleep(5000);
 					counterAttack();
 				}
 			}
