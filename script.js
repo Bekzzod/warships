@@ -64,6 +64,7 @@ function startGame() {
 					compTable.rows[i].cells[j].textContent = "\u26ab";
 					compMatrix[row][cell] = 3;
 					document.getElementsByClassName("res")[0].innerHTML = `${playerName} промахнулся. Стреляет ${compName} &#8594;`;
+					sleep(1000);
 					counterAttack();
 				}
 			}
@@ -347,4 +348,13 @@ function revenge() {
 	document.getElementsByClassName("res")[0].style.fontSize = "40px";
 
 	startGame();
+}
+
+function sleep(milliseconds) {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
+  }
 }
